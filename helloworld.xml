@@ -1,0 +1,342 @@
+<context>
+
+    <input pattern="(hi|hello) $Text">
+      <context id="empty" if="empty($Text)">
+        <output value="Hello"/>
+      </context>
+      <context id="equal" if='eq($Text, "terra") or eq($Text, "tor")'>
+        <output value="Hello terr"/>
+      </context>
+      <context id="full" if="full($Text)">
+        <output value="Hello $Text"/>
+      </context>
+    </input>
+
+
+
+    <input pattern="Lists">
+      <get url="https://api.trello.com/1/boards/$BoardLink" var="Lists">
+        <param name="fields" value="id"/>
+        <param name="lists" value="open"/>
+        <param name="list_fields" value="id"/>
+        <param name="list_fields" value="name"/>
+        <param name="key" value="$Key"/>
+        <param name="token" value="$Token"/>
+      </get>
+      <var name="listResponse" value='javascript: getLists($Lists)'/>
+      <output value='$listResponse'/>
+    </input>
+
+    <input pattern="SetList $Text">
+      <var name="CurrentList" scope="user">
+        <script>
+          <![CDATA[
+            var result = $Text;
+            result = result.replace(/ /g, "");
+            result;
+          ]]>
+        </script>
+      </var>
+      <output value="Connected to list: $CurrentList"/>
+    </input>
+
+    <input pattern="NewList $Text">
+      <post url="https://api.trello.com/1/boards/$BoardLink/lists" var="Response">
+         <header name="Content-Type" value="application/json"/>
+            <body>
+                <![CDATA[
+                    {
+                     "name":"$Text",
+                     "pos":"bottom",
+                     "key":"$Key",
+                     "token":"$Token"
+                    }
+                ]]>
+            </body>
+      </post>
+      <output value="List $Text is created."/>
+    </input>
+
+    <input pattern="NewCard $Text">
+          <post url="https://api.trello.com/1/cards" var="CardResponse">
+             <header name="Content-Type" value="application/json"/>
+                <body>
+                    <![CDATA[
+                        {
+                         "name":"$Text",
+                         "pos":"top",
+                         "idList":"$CurrentList",
+                         "idMembers":"$UserId",
+                         "desc":"$UserName",
+                         "keepFromSource":"all",
+                         "key":"$Key",
+                         "token":"$Token"
+                        }
+                    ]]>
+                </body>
+          </post>
+      <output value="Card $Text is created."/>
+    </input>
+
+    <input pattern="google $Date">
+      <post url="https://www.googleapis.com/calendar/v3/calendars/afanasyevafanasyev@gmail.com/events" var="Response">
+         <header name="Content-Type" value="application/json"/>
+            <body>
+                <![CDATA[
+                    {
+                     "description": "This is the test.",
+                     "start": {
+                      "dateTime": "$DateT17:00:00-10:00",
+                      "timeZone": "America/Los_Angeles",
+                     },
+                     "end": {
+                      "dateTime": "$DateT17:10:00-17:00",
+                      "timeZone": "America/Los_Angeles",
+                     },
+                     
+                    }
+                ]]>
+            </body>
+      </post>
+      <output value="Set $Date"/>
+    </input>
+
+
+
+
+
+
+
+    <input pattern="(help|manual|tutorial)">
+      <var name="help" value="javascript: help()"/>
+      <output value="$help"/>
+    </input>
+
+    <input pattern="SetUser $Text">
+      <get url="https://api.trello.com/1/members/$Text" var="UserData"/>
+      <var name="UserId" value="javascript: getUser($UserData)" scope="user"/>
+      <var name="UserName" value="javascript: getName($UserData)" scope="user"/>
+      <output value="Connected to user: $UserName. User id is: $UserId"/>
+    </input>
+
+    <input pattern="SetBoard $Text">
+      <var name="BoardLink" value="$Text" scope="user"/>
+      <var name="Key" value="83f503d365d5e4a782b656037406de48" scope="user"/>
+      <var name="Token" value="a8b67b8525c4ddfef97643109e4e608d4425ac9a808c0b5e8e1efe33cd4df6ae" scope="user"/>
+      <output value="Connected to board: $BoardLink"/>
+    </input>
+
+    <input pattern="Prepare">
+      <get url="https://api.trello.com/1/boards/$BoardLink" var="Lists">
+        <param name="fields" value="id"/>
+        <param name="lists" value="open"/>
+        <param name="list_fields" value="id"/>
+        <param name="list_fields" value="name"/>
+        <param name="key" value="$Key"/>
+        <param name="token" value="$Token"/>
+      </get>
+      <var name="Checker" value='javascript: checker($Lists)'/>
+      <context if="empty($Checker)">
+        <post url="https://api.trello.com/1/boards/$BoardLink/lists" var="Response">
+           <header name="Content-Type" value="application/json"/>
+              <body>
+                  <![CDATA[
+                      {
+                       "name":"Problems",
+                       "pos":"top",
+                       "key":"$Key",
+                       "token":"$Token"
+                      }
+                  ]]>
+              </body>
+        </post>
+        <post url="https://api.trello.com/1/boards/$BoardLink/lists" var="Response">
+           <header name="Content-Type" value="application/json"/>
+              <body>
+                  <![CDATA[
+                      {
+                       "name":"Done",
+                       "pos":"top",
+                       "key":"$Key",
+                       "token":"$Token"
+                      }
+                  ]]>
+              </body>
+        </post>
+        <post url="https://api.trello.com/1/boards/$BoardLink/lists" var="Response">
+           <header name="Content-Type" value="application/json"/>
+              <body>
+                  <![CDATA[
+                      {
+                       "name":"In progress",
+                       "pos":"top",
+                       "key":"$Key",
+                       "token":"$Token"
+                      }
+                  ]]>
+              </body>
+        </post>
+        <post url="https://api.trello.com/1/boards/$BoardLink/lists" var="Response">
+           <header name="Content-Type" value="application/json"/>
+              <body>
+                  <![CDATA[
+                      {
+                       "name":"Goals",
+                       "pos":"top",
+                       "key":"$Key",
+                       "token":"$Token"
+                      }
+                  ]]>
+              </body>
+        </post>
+      </context>
+      <var name="idGoal" value='javascript: getListId($Lists, "Goals")' scope="user"/>
+      <var name="idPast" value='javascript: getListId($Lists, "Done")' scope="user"/>
+      <var name="idPresent" value='javascript: getListId($Lists, "In progress")' scope="user"/>
+      <var name="idProblems" value='javascript: getListId($Lists, "Problems")' scope="user"/>
+      <output value="Board is prepared."/>
+    </input>
+
+    <input pattern="Goal $Text">
+      <post url="https://api.trello.com/1/cards" var="Response">
+        <header name="Content-Type" value="application/json"/>
+          <body>
+              <![CDATA[
+                  {
+                     "name":"$Text",
+                     "pos":"top",
+                     "idList":"$idGoal",
+                     "idMembers":"$UserId",
+                     "desc":"$UserName",
+                     "keepFromSource":"all",
+                     "key":"$Key",
+                     "token":"$Token"
+                  }
+              ]]>
+          </body>
+        </post>
+      <output value="Card $Text added to list Goals"/>
+    </input>
+
+    <input pattern="(Done|Did|Finished) $Text">
+      <post url="https://api.trello.com/1/cards" var="Response">
+        <header name="Content-Type" value="application/json"/>
+          <body>
+              <![CDATA[
+                  {
+                     "name":"$Text",
+                     "pos":"top",
+                     "idList":"$idPast",
+                     "idMembers":"$UserId",
+                     "desc":"$UserName",
+                     "keepFromSource":"all",
+                     "key":"$Key",
+                     "token":"$Token"
+                  }
+              ]]>
+          </body>
+        </post>
+      <output value="Card $Text added to list Past"/>
+    </input>
+
+    <input pattern="(WillDo|Doing|InProgress) $Text">
+      <post url="https://api.trello.com/1/cards" var="Response">
+        <header name="Content-Type" value="application/json"/>
+          <body>
+              <![CDATA[
+                  {
+                     "name":"$Text",
+                     "pos":"top",
+                     "idList":"$idPresent",
+                     "idMembers":"$UserId",
+                     "desc":"$UserName",
+                     "keepFromSource":"all",
+                     "key":"$Key",
+                     "token":"$Token"
+                  }
+              ]]>
+          </body>
+        </post>
+      <output value="Card $Text added to list Present"/>
+    </input>
+
+    <input pattern="(Problems|Problem) $Text">
+      <post url="https://api.trello.com/1/cards" var="Response">
+        <header name="Content-Type" value="application/json"/>
+          <body>
+              <![CDATA[
+                  {
+                     "name":"$Text",
+                     "pos":"top",
+                     "idList":"$idProblems",
+                     "idMembers":"$UserId",
+                     "desc":"$UserName",
+                     "keepFromSource":"all",
+                     "key":"$Key",
+                     "token":"$Token"
+                  }
+              ]]>
+          </body>
+        </post>
+      <output value="Card $Text added to list Problems"/>
+    </input>
+
+    <input pattern="Answers">
+      <get url="https://api.trello.com/1/boards/$BoardLink/lists" var="ListsCards">
+        <param name="fields" value="id"/>
+        <param name="fields" value="name"/>
+        <param name="cards" value="open"/>
+        <param name="card_fields" value="all"/>
+        <param name="key" value="$Key"/>
+        <param name="token" value="$Token"/>
+      </get>
+      <var name="todayResponse" value='javascript: getTodayCards($ListsCards)'/>
+      <output value='$todayResponse'/>
+    </input>
+
+    <input pattern="ListGoals">
+      <get url="https://api.trello.com/1/lists/$idGoal/cards" var="ListGoals">
+        <param name="cards" value="open"/>
+        <param name="card_fields" value="all"/>
+        <param name="key" value="$Key"/>
+        <param name="token" value="$Token"/>
+      </get>
+      <var name="GoalCards" value='javascript: getListCards($ListGoals)'/>
+      <output value='$GoalCards'/>
+    </input>
+
+    <input pattern="ListInProgress">
+      <get url="https://api.trello.com/1/lists/$idPresent/cards" var="ListProgress">
+        <param name="cards" value="open"/>
+        <param name="card_fields" value="all"/>
+        <param name="key" value="$Key"/>
+        <param name="token" value="$Token"/>
+      </get>
+      <var name="ProgressCards" value='javascript: getListCards($ListProgress)'/>
+      <output value='$ProgressCards'/>
+    </input>
+
+    <input pattern="ListDone">
+      <get url="https://api.trello.com/1/lists/$idPast/cards" var="ListDone">
+        <param name="cards" value="open"/>
+        <param name="card_fields" value="all"/>
+        <param name="key" value="$Key"/>
+        <param name="token" value="$Token"/>
+      </get>
+      <var name="DoneCards" value='javascript: getListCards($ListDone)'/>
+      <output value='$DoneCards'/>
+    </input>
+
+    <input pattern="ListProblems">
+      <get url="https://api.trello.com/1/lists/$idProblems/cards" var="ListProblems">
+        <param name="cards" value="open"/>
+        <param name="card_fields" value="all"/>
+        <param name="key" value="$Key"/>
+        <param name="token" value="$Token"/>
+      </get>
+      <var name="ProblemCards" value='javascript: getListCards($ListProblems)'/>
+      <output value='$ProblemCards'/>
+    </input>
+
+
+</context>
