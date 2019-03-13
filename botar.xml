@@ -9,6 +9,18 @@
                           has($Text, "пожарим")  or 
                           has($Text, "давайте")  or
                           has($Text, "пиво")  or
+                          has($Text, "пива")  or
+                          has($Text, "пиву")  or
+                          has($Text, "водка")  or
+                          has($Text, "водке")  or
+                          has($Text, "виски")  or
+                          has($Text, "вискарь")  or
+                          has($Text, "бухло")  or
+                          has($Text, "абсент")  or
+                          has($Text, "сидр")  or
+                          has($Text, "алкогол")  or
+                          has($Text, "бабам")  or
+                          has($Text, "трава")  or
                           has($Text, "стриптиз")  or
                           has($Text, "шлюх")  or
                           has($Text, "кокаин")  or
