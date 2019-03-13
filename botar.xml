@@ -1,10 +1,18 @@
 <context>
 
   <input pattern="$Text">
-    <context id="rus" if='has($Text, "бар") or has($Text, "туси") or
-      has($Text, "пати")  or has($Text, "бухать")  or
-      has($Text, "соберемся")  or has($Text, "пожарим")  or has($Text, "давайте")  or
-      has($Text, "шашлык")'>
+    <context id="rus" if='has($Text, "бар") or 
+                          has($Text, "туси") or
+                          has($Text, "пати")  or 
+                          has($Text, "бухать")  or
+                          has($Text, "соберемся")  or 
+                          has($Text, "пожарим")  or 
+                          has($Text, "давайте")  or
+                          has($Text, "пиво")  or
+                          has($Text, "стриптиз")  or
+                          has($Text, "шлюх")  or
+                          has($Text, "кокаин")  or
+                          has($Text, "шашлык")'>
       <output value="Не ребята, я сегодня ботать"/>
     </context>
   </input>
